@@ -1,22 +1,65 @@
 import React, { useState,useEffect } from 'react'
 import { Button,IconButton, Modal, Typography } from '@mui/material';
 import TipsAndUpdatesOutlinedIcon from '@mui/icons-material/TipsAndUpdatesOutlined';
-import ShareIcon from '@mui/icons-material/Share';
+import LocalTaxiIcon from '@mui/icons-material/LocalTaxi';
 import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
 import alcocare from '../img/alcocare.png'
 import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
-
-
+import axios from 'axios';
 import Tips from './childViews/Tips';
 import SemiTips from './childViews/SemiTips';
 import Help from './childViews/Help';
 
+
 const LoginSuccess = () => {
 
-const [alcoholPercent,setAlcoholPercent] = useState(0.072)
+const [maxDrink, setMaxDrink] = useState(0); // 이 값을 보낼 예정
+const [send, setSend] = useState(false);
+const [clientCnt, setClientSet] = useState(0);
+const [val,setVal] = useState(0)
 const [open, setOpen] = React.useState(false);
 const [open2,setOpen2] = React.useState(false);
 const [open3,setOpen3] = React.useState(false);
+const [isHalf, setIsHalf] = useState(1);
+const [cmd, setCmd] = useState({
+  drink: 0,
+  isHalf: 1 //1 한잔 -1 반잔
+});
+
+
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const response = await axios.get('http://localhost:3001/get-data');
+      setVal(response.data.value);
+      setClientSet(response.data.clientCnt);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  fetchData();
+  const interval = setInterval(() => {
+    fetchData();}
+  , 100);
+  return () => clearInterval(interval);
+});
+
+useEffect(()=>{ // 서버로 값 보냄
+  const sendData = async () =>{
+    try{
+      await axios.post('http://localhost:3001/send-data-react', 
+      {val : maxDrink});
+    } catch(error){
+      console.error('Error fetching data:', error);
+    }
+  }
+  if(send) sendData();
+})
+
+
+
+
 const handleClose = () => {
   setOpen(false);
 };
@@ -39,6 +82,15 @@ const handleOpen3 = () => {
   setOpen3(true);
 };
 
+const isHalf_cmd = (isH) => {
+  let newCmd = {drink: cmd.drink, isHalf: isH};
+  setCmd(newCmd);
+}
+
+const drink_cmd = (d) => {
+  let newCmd = {drink: d, isHalf: cmd.isHalf};
+  setCmd(newCmd); 
+}
 
 
 
@@ -52,14 +104,27 @@ return (
   <Typography align="center" style={{ fontWeight: 'bold' }} variant="subtitle1" gutterBottom>
      혈중 알코올 농도
   </Typography>
-    
+{/*
+  <h1>Value from ESP8266:</h1>
+      <p>{val !== null ? `Value: ${val}` : 'Loading value...'}</p>
+
+  <hr/>
+      <h3>설명 : cmd의 객체를 밑의 버튼들이 설정해줌, 이후 JSON으로 만든 뒤 보냄</h3>
+      <p>1 : 한잔, -1 : 반잔 {clientCnt}</p>
+      <p>보낼 문자열 : {JSON.stringify(cmd)}</p>
+      <button onClick={()=>{setIsHalf(isHalf*-1); isHalf_cmd(isHalf);}}>{isHalf===1 ? "한잔 추가" : "반잔 추가"}</button>
+      <input type='number' step="0.5" value = {maxDrink} 
+        onChange={(e) => {return setMaxDrink(e.target.value)}} max="5" min="0"/>
+      <button onClick={()=>{drink_cmd(maxDrink)}}>주량 추가</button>
+*/}
+
   
   <div style={{ textAlign: 'center', display: 'flex', alignItems: 'center',justifyContent:'center' }}>
     <Typography variant='h3' component='span' style={{ color: 'rgb(240,255,255)' }}>
       %
     </Typography>
     <Typography align='center' variant='h1' display="inline" gutterBottom style={{fontWeight:'360',fontSize:"110px" }}>
-      {alcoholPercent}
+      {val}
     </Typography>
     <div style={{ display: 'flex', flexDirection: "column", justifyContent: 'space-between', alignItems: 'center' ,textAlign:'center'}}>
       
@@ -68,7 +133,7 @@ return (
       </Typography>
   
       <IconButton>
-        <RefreshRoundedIcon style={{backgroundColor:'white', borderRadius:'20px',border:'2px solid green'}}  sx={{fontSize:35}}/>
+        <RefreshRoundedIcon style={{backgroundColor:'white',margin:'10px', borderRadius:'20px',border:'2px solid green'}}  sx={{fontSize:35}}/>
       </IconButton>
     </div>
      </div>
@@ -80,7 +145,7 @@ return (
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-       <Tips alcoholPercent={alcoholPercent} handleClose={handleClose}/>
+       <Tips alcoholPercent={val} handleClose={handleClose}/>
       </Modal>
      <hr/>
      <Button onClick={handleOpen2} style={{borderRadius:'40px',border:'2px solid blue '}} endIcon={<TipsAndUpdatesOutlinedIcon/>}>
@@ -91,15 +156,12 @@ return (
   onClose={handleClose2}
   aria-labelledby="modal-modal-title"
   aria-describedby="modal-modal-description">
-          <SemiTips handleClose2={handleClose2} alcoholPercent={alcoholPercent}/>
-          
+          <SemiTips handleClose2={handleClose2} alcoholPercent={val}/>
           </Modal>   
-
-
-    <Button style={{borderRadius:'40px',border:'2px solid gray',color:'gray'}} endIcon={<ShareIcon/>}>
-      share
+    <Button onClick={() => window.open("https://www.kakaomobility.com/service-kakaot")} style={{borderRadius:'40px',border:'2px solid green',color:'gray',margin:'10px'}} endIcon={<LocalTaxiIcon/>}>
+      TAXI
     </Button>
-      <Button  onClick={handleOpen3} style={{borderRadius:'40px',border:'2px solid black',color:'black'}} endIcon={<HelpOutlineOutlinedIcon/>}>
+      <Button  onClick={handleOpen3} style={{borderRadius:'40px',border:'2px solid black',color:'black',margin:'10px'}} endIcon={<HelpOutlineOutlinedIcon/>}>
       help
     </Button>
     <Modal
