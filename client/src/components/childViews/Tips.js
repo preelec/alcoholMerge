@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import ShareIcon from '@mui/icons-material/Share';
-import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
 import CloseIcon from '@mui/icons-material/Close';
 import { IconButton, Link } from '@mui/material';
 
