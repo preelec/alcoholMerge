@@ -29,10 +29,10 @@ export default function Main() {
   return (
     <div>
       
-        <div className="card">
-        <div className="circle"></div>
-        <div className="circle"></div>
-        <div className="card-inner">
+        <div className="Main_card">
+        <div className="Main_circle"></div>
+        <div className="Main_circle"></div>
+        <div className="Main_card-inner">
         <img src={logo} style={{
           marginTop:"80px"
         }}></img>

@@ -35,10 +35,13 @@ const Redirection = () => {
                     }
                 }).then((res)=>{
                     console.log("데이터 받기 성공:");
-                    console.log(res.data);
                     
-                    const KaKaoData = res.data
-                    const userData = KaKaoData.kakao_account
+                    console.log(res.data.properties.nickname)
+                    const sendNickValue = res.data.properties.nickname
+                    axios.post('http://localhost:4000/Login',{sendNickValue:sendNickValue}).then(()=>{
+                        console.log("send nick")
+                    })
+                    // const userData = KaKaoData.kakao_account
                     // axios.post('http://localhost:4000/',{userData:userData}).then(()=>console.log("send userData"))
                     navigate('/LoginSuccess')
                 })
@@ -53,9 +56,7 @@ const Redirection = () => {
                 //     // 회원가입을 하지 않겠다 false --> main페이지로 이동
                 //     navigate('/')
                 // }
-            
             }
-
         })
     },[])
   
