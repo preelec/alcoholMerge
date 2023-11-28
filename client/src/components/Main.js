@@ -2,7 +2,7 @@ import React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import KaKaoLogin from "react-kakao-login"
 import logo from '../img/logo.png'
-
+import axios from 'axios';
 import './component_css/CateBtn.css'
 import './component_css/Main_Card.css'
 
@@ -21,9 +21,24 @@ export default function Main() {
 
   const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`
   
-  const loginHandler = () => {
-    window.location.href = kakaoURL
+  const loginHandler = async () => {
+    try {
+      const response = await axios.get('http://localhost:3001/');
+      const amountCheck = response.data.find(response => response.KaKaoData.amount === true);
+  
+      if (amountCheck) {
+        navigate('/Amount');  
+      } else {
+          window.location.href = kakaoURL
+
+      }
+    } catch (error) {
+      console.error('데이터를 가져오는 중 오류 발생:', error);
+      // 필요에 따라 오류를 처리해주세요.
+    }
   };
+
+  
 
   const navigate = useNavigate(); 
   return (

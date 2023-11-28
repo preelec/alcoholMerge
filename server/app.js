@@ -2,12 +2,17 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 const port = 3001;
+const cors = require('cors');
+app.use(cors())
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json()); //json 파일 형태로 주고 받음.
 
 let arduinoValue = null; //아두이노의 값
 let reactValue = null; //React의 값
+const nickname = null;
+
+
 
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
@@ -32,6 +37,45 @@ app.post('/send-data-react', (req, res) => { //React측에서 값을 받음
   console.log('ReactValue:', reactValue);
   res.send('Value received successfully.');
 });
+
+/*
+const LoginUser = [];
+app.get('/',(req,res)=>{
+  // LoginUser.push(req.query) 
+  res.json(LoginUser)
+})
+
+app.post('/',(req,res)=>{
+  const data = req.body;
+  LoginUser.push(data);
+  console.log('post success')
+})
+*/
+
+
+const login_user = []
+app.get('/',(req, res) => {
+  res.json(login_user);
+});
+
+app.post('/',(req,res)=>{
+  const userData = req.body;
+  login_user.push(userData)
+  res.send("포스트 성공")
+})
+
+app.get('/Non_Login',(req,res)=>{
+  // Non_LoginUser.push(req.query) 
+  res.json(Non_LoginUser)
+})
+
+
+app.post('/Non_Login',(req,res)=>{
+  const data = req.body;
+  Non_LoginUser.push(data);
+  console.log('post success')
+})
+
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

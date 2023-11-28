@@ -2,10 +2,15 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios"
 import { useEffect } from "react";
 import './component_css/Redirection_css.css'
+import LoginSuccess from "./LoginSuccess";
+import GlobalEmail from "./GlobalEmail";
+import { useContext } from "react";
 
 const Redirection = () => {
     // const code = window.location.search;
-    const navigate = useNavigate();  
+    const {email,SetEmail} = useContext(GlobalEmail);
+    const navigate = useNavigate(); 
+    const storedValue = JSON.parse(sessionStorage.getItem('globalAmount'));
     const code = new URL(window.location.href).searchParams.get("code");
     const grant_type = 'authorization_code'
     const REDIRECT_URI ='http://localhost:3000/Redirection';
@@ -25,7 +30,6 @@ const Redirection = () => {
             const {data} = res;
             const {access_token} = data;
             // axios.post('http://localhost:4000/',{access_token:access_token}).then(()=>console.log("send token"))
-
             if(access_token){
                 console.log(`Bearer ${access_token}`)
                 axios.post("https://kapi.kakao.com/v2/user/me",{},{
@@ -34,12 +38,16 @@ const Redirection = () => {
                         "Content-Type":"application/x-www-from-urlencoded",
                     }
                 }).then((res)=>{
+                    //resdata에서 유저 정보를 출력가능
                     console.log("데이터 받기 성공:");
-                    console.log(res.data);
-                    
+                    console.log(res.data+"resdata");
                     const KaKaoData = res.data
+                    SetEmail(res.data.kakao_account.email)
+                    console.log(KaKaoData); 
                     const userData = KaKaoData.kakao_account
-                    // axios.post('http://localhost:4000/',{userData:userData}).then(()=>console.log("send userData"))
+                    
+                    KaKaoData['amount'] = storedValue
+                    axios.post('http://localhost:3001/',{KaKaoData:KaKaoData}).then(()=>console.log("send userData"))
                     navigate('/LoginSuccess')
                 })
             }else{
@@ -59,6 +67,10 @@ const Redirection = () => {
         })
     },[])
   
+
+
+
+
     return(
         <div style={{
             display:'flex',

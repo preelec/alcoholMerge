@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react'
+import React, { useState,useEffect, useContext } from 'react'
 import { Button,IconButton, Modal, Typography } from '@mui/material';
 import TipsAndUpdatesOutlinedIcon from '@mui/icons-material/TipsAndUpdatesOutlined';
 import LocalTaxiIcon from '@mui/icons-material/LocalTaxi';
@@ -9,10 +9,12 @@ import axios from 'axios';
 import Tips from './childViews/Tips';
 import SemiTips from './childViews/SemiTips';
 import Help from './childViews/Help';
-
+import Amount from './childViews/Amount';
+import LiquorIcon from '@mui/icons-material/Liquor';
+import GlobalEmail from './GlobalEmail';
 
 const LoginSuccess = () => {
-
+  
 const [maxDrink, setMaxDrink] = useState(0); // 이 값을 보낼 예정
 const [send, setSend] = useState(false);
 const [clientCnt, setClientSet] = useState(0);
@@ -20,11 +22,54 @@ const [val,setVal] = useState(0)
 const [open, setOpen] = React.useState(false);
 const [open2,setOpen2] = React.useState(false);
 const [open3,setOpen3] = React.useState(false);
+const [open4,setOpen4] = React.useState(false);
 const [isHalf, setIsHalf] = useState(1);
+const [amount,setAmount] = useState(0);
+
+const [nickname,SetNickname] = useState('');   
+const {email} = useContext(GlobalEmail);
 const [cmd, setCmd] = useState({
   drink: 0,
   isHalf: 1 //1 한잔 -1 반잔
 });
+
+
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const response = await axios.get('http://localhost:3001/');
+
+      // 데이터에서 "nickname" 추출
+   //   const extractedNicknames = response.data[0].KaKaoData.properties.nickname 
+      console.log(response);
+      const emailCheck = response.data.find(response => response.KaKaoData.kakao_account.email.toString() === email)
+      
+      console.log(emailCheck)
+      if(emailCheck){
+        const extractedNicknames = emailCheck.KaKaoData.properties.nickname
+        const amountPerson = emailCheck.KaKaoData.amount;
+        setAmount(amountPerson);
+        console.log(amountPerson)
+         
+      console.log(extractedNicknames);
+      // 추출된 닉네임을 상태에 설정
+      SetNickname(extractedNicknames);
+        
+    }else {
+        console.log("Email not found in the response data.");
+      }
+   
+      console.log(email+"이메일")
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  fetchData();
+}, []); // 빈 배열을 전달하여 컴포넌트가 마운트될 때만 실행
+
+
+
 
 
 useEffect(() => {
@@ -37,6 +82,9 @@ useEffect(() => {
       console.error('Error fetching data:', error);
     }
   };
+
+
+ 
 
   fetchData();
   const interval = setInterval(() => {
@@ -76,10 +124,20 @@ const handleOpen2 = () => {
 
 const handleClose3 =() => {
   setOpen3(false);
+  
 }
 
 const handleOpen3 = () => {
   setOpen3(true);
+  
+};
+
+const handleClose4 =() => {
+  setOpen4(false);
+}
+
+const handleOpen4 = () => {
+  setOpen4(true);
 };
 
 const isHalf_cmd = (isH) => {
@@ -100,9 +158,17 @@ return (
     <div style={{alignItems:'center', justifyContent:'center',display:'flex',marginBottom:50}} >
     <img src={alcocare}></img>
   </div>
+  <div>
+  <Typography align="center" style={{ fontWeight: 'bold' }} variant="subtitle1" gutterBottom>
+     환영합니다 {nickname} 회원님
+  </Typography>
+  <Typography align="center" style={{ fontWeight: 'bold' }} variant="subtitle1" gutterBottom>
+    남은 주량은 {amount}입니다
+  </Typography>
+  </div>
   <div style={{ alignItems: 'center', justifyContent:'center',textAlign:'center' }}>
   <Typography align="center" style={{ fontWeight: 'bold' }} variant="subtitle1" gutterBottom>
-     혈중 알코올 농도
+     혈중 알코올 농도  {email}
   </Typography>
 {/*
   <h1>Value from ESP8266:</h1>
@@ -161,9 +227,24 @@ return (
     <Button onClick={() => window.open("https://www.kakaomobility.com/service-kakaot")} style={{borderRadius:'40px',border:'2px solid green',color:'gray',margin:'10px'}} endIcon={<LocalTaxiIcon/>}>
       TAXI
     </Button>
+    <Button  onClick={handleOpen4} style={{borderRadius:'40px',border:'2px solid black',color:'black',margin:'10px'}} endIcon={<LiquorIcon/>}>
+      주량
+    </Button>
+    
+    <Modal
+  open={open4}
+  onClose={handleClose4}
+  aria-labelledby="modal-modal-title"
+  aria-describedby="modal-modal-description">
+          <Amount handleClose4={handleClose4} alcoholPercent={val}/>
+          </Modal>
+
+
       <Button  onClick={handleOpen3} style={{borderRadius:'40px',border:'2px solid black',color:'black',margin:'10px'}} endIcon={<HelpOutlineOutlinedIcon/>}>
       help
     </Button>
+
+
     <Modal
   open={open3}
   onClose={handleClose3}
@@ -172,6 +253,7 @@ return (
           <Help handleClose3={handleClose3}/>
           </Modal> 
 </div>
+
     
     </div>
   )

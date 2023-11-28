@@ -12,7 +12,7 @@ const Login = () => {
     // 대신!! Redirect URI는 반드시 프론트에서 접근할 수 있는 Hoist로 지정 (localhost:3000)
 
     const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`
-
+    
     const loginHandler = () => {
       window.location.href = kakaoURL
     };
