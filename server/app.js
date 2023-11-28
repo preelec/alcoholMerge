@@ -14,12 +14,18 @@ const nickname = null;
 
 
 
+<<<<<<< HEAD
+const LoginUser = [];
+const Non_LoginUser =[];
+
+=======
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'POST');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   next();
 });
+>>>>>>> 309e4d973ccd4b3dc6a64defb3dcffba89dc214f
 
 app.post('/send-data', (req, res) => {
   arduinoValue = req.body.val; //arduino에게 값을 받음
@@ -28,6 +34,31 @@ app.post('/send-data', (req, res) => {
   console.log('Forwarding value to React:', arduinoValue);
 });
 
+<<<<<<< HEAD
+app.get('/Login',(req,res)=>{
+    // LoginUser.push(req.query) 
+    res.json(LoginUser)
+})
+
+app.post('/Login',(req,res)=>{
+    const data = req.body;
+    LoginUser.push(data);
+    console.log('post success')
+})
+
+
+app.get('/Non_Login',(req,res)=>{
+    // Non_LoginUser.push(req.query) 
+    res.json(Non_LoginUser)
+})
+
+
+app.post('/Non_Login',(req,res)=>{
+    const data = req.body;
+    Non_LoginUser.push(data);
+    console.log('post success')
+})
+=======
 app.get('/get-data', (req, res) => { //react에게 값을 보내기 위해 json으로 만듬
   res.json({ value: arduinoValue });
 });
@@ -37,6 +68,7 @@ app.post('/send-data-react', (req, res) => { //React측에서 값을 받음
   console.log('ReactValue:', reactValue);
   res.send('Value received successfully.');
 });
+>>>>>>> 309e4d973ccd4b3dc6a64defb3dcffba89dc214f
 
 /*
 const LoginUser = [];

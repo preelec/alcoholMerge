@@ -40,6 +40,7 @@ const Redirection = () => {
                 }).then((res)=>{
                     //resdata에서 유저 정보를 출력가능
                     console.log("데이터 받기 성공:");
+<<<<<<< HEAD
                     console.log(res.data+"resdata");
                     const KaKaoData = res.data
                     SetEmail(res.data.kakao_account.email)
@@ -48,6 +49,16 @@ const Redirection = () => {
                     
                     KaKaoData['amount'] = storedValue
                     axios.post('http://localhost:3001/',{KaKaoData:KaKaoData}).then(()=>console.log("send userData"))
+=======
+                    
+                    console.log(res.data.properties.nickname)
+                    const sendNickValue = res.data.properties.nickname
+                    axios.post('http://localhost:4000/Login',{sendNickValue:sendNickValue}).then(()=>{
+                        console.log("send nick")
+                    })
+                    // const userData = KaKaoData.kakao_account
+                    // axios.post('http://localhost:4000/',{userData:userData}).then(()=>console.log("send userData"))
+>>>>>>> 1564a17e5f4ff3df1dd64a4c2aa7983faa84df12
                     navigate('/LoginSuccess')
                 })
             }else{
@@ -61,9 +72,7 @@ const Redirection = () => {
                 //     // 회원가입을 하지 않겠다 false --> main페이지로 이동
                 //     navigate('/')
                 // }
-            
             }
-
         })
     },[])
   
