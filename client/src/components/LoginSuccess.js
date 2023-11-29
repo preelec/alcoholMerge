@@ -15,8 +15,7 @@ import GlobalEmail from './GlobalEmail';
 
 const LoginSuccess = () => {
   
-const [maxDrink, setMaxDrink] = useState(0); // 이 값을 보낼 예정
-const [send, setSend] = useState(false);
+const [maxDrink, setMaxDrink] = useState(0); // 이 값을 보낼 예정  아두이노에 보내는 주량
 const [clientCnt, setClientSet] = useState(0);
 const [val,setVal] = useState(0)
 const [open, setOpen] = React.useState(false);
@@ -25,11 +24,13 @@ const [open3,setOpen3] = React.useState(false);
 const [open4,setOpen4] = React.useState(false);
 const [isHalf, setIsHalf] = useState(1);
 const [amount,setAmount] = useState(0);
-
+const [mode,setMode] = useState("반잔모드")
 const [nickname,SetNickname] = useState('');   
 const {email} = useContext(GlobalEmail);
+const [sex2,setSex2] = useState(0);
+const [weight,setWeight] = useState(0)
 const [cmd, setCmd] = useState({
-  drink: 0,
+  drink: -300,
   isHalf: 1 //1 한잔 -1 반잔
 });
 
@@ -43,14 +44,32 @@ useEffect(() => {
    //   const extractedNicknames = response.data[0].KaKaoData.properties.nickname 
       console.log(response);
       const emailCheck = response.data.find(response => response.KaKaoData.kakao_account.email.toString() === email)
-      
       console.log(emailCheck)
       if(emailCheck){
         const extractedNicknames = emailCheck.KaKaoData.properties.nickname
         const amountPerson = emailCheck.KaKaoData.amount;
+        const sex = emailCheck.KaKaoData.sex;
+        const weight = emailCheck.KaKaoData.weight
+     
+        setCmd(prevCmd => ({
+          ...prevCmd,
+          drink: amountPerson
+        }));
+        
         setAmount(amountPerson);
+        console.log(amountPerson);
+       
+        setWeight(weight)
+        console.log(weight)
+        
+
         console.log(amountPerson)
-         
+        if(sex==1){
+          setSex2(0.86)
+          
+        }else{
+          setSex2(0.64)
+        }
       console.log(extractedNicknames);
       // 추출된 닉네임을 상태에 설정
       SetNickname(extractedNicknames);
@@ -65,12 +84,15 @@ useEffect(() => {
     }
   };
 
-  fetchData();
+  fetchData()
 }, []); // 빈 배열을 전달하여 컴포넌트가 마운트될 때만 실행
 
 
+useEffect(()=>{
+  const d = (50*0.16*0.7894)*5/(10*sex2*weight)
+  setMaxDrink(d.toFixed(4))
 
-
+},)
 
 useEffect(() => {
   const fetchData = async () => {
@@ -80,30 +102,41 @@ useEffect(() => {
       setClientSet(response.data.clientCnt);
     } catch (error) {
       console.error('Error fetching data:', error);
+    
+
     }
   };
-
-
- 
-
   fetchData();
   const interval = setInterval(() => {
     fetchData();}
-  , 100);
+  , 3000 );
   return () => clearInterval(interval);
 });
 
 useEffect(()=>{ // 서버로 값 보냄
   const sendData = async () =>{
     try{
+      if(cmd.drink>-200){
       await axios.post('http://localhost:3001/send-data-react', 
-      {val : maxDrink});
+      {val : JSON.stringify(cmd)});
+      }
     } catch(error){
       console.error('Error fetching data:', error);
     }
   }
-  if(send) sendData();
+  sendData();
 })
+
+
+useEffect(() =>{
+  if(isHalf==1){
+    setMode("한잔모드")
+  }else{
+    setMode("반잔모드")
+    
+  }
+},[isHalf])
+
 
 
 
@@ -130,25 +163,15 @@ const handleClose3 =() => {
 const handleOpen3 = () => {
   setOpen3(true);
   
-};
-
-const handleClose4 =() => {
-  setOpen4(false);
-}
-
-const handleOpen4 = () => {
-  setOpen4(true);
+  
 };
 
 const isHalf_cmd = (isH) => {
-  let newCmd = {drink: cmd.drink, isHalf: isH};
+  console.log(cmd)
+  let newCmd = {drink: amount, isHalf: isH};
   setCmd(newCmd);
 }
 
-const drink_cmd = (d) => {
-  let newCmd = {drink: d, isHalf: cmd.isHalf};
-  setCmd(newCmd); 
-}
 
 
 
@@ -163,15 +186,15 @@ return (
      환영합니다 {nickname} 회원님
   </Typography>
   <Typography align="center" style={{ fontWeight: 'bold' }} variant="subtitle1" gutterBottom>
-    남은 주량은 {amount}입니다
+    현재 마신 잔은 {val} 이며  주량까지 남은 잔은{amount} 입니다
   </Typography>
   </div>
   <div style={{ alignItems: 'center', justifyContent:'center',textAlign:'center' }}>
   <Typography align="center" style={{ fontWeight: 'bold' }} variant="subtitle1" gutterBottom>
-     혈중 알코올 농도  {email}
+     혈중 알코올 농도
   </Typography>
-{/*
-  <h1>Value from ESP8266:</h1>
+
+{/*  <h1>Value from ESP8266:</h1>
       <p>{val !== null ? `Value: ${val}` : 'Loading value...'}</p>
 
   <hr/>
@@ -182,15 +205,15 @@ return (
       <input type='number' step="0.5" value = {maxDrink} 
         onChange={(e) => {return setMaxDrink(e.target.value)}} max="5" min="0"/>
       <button onClick={()=>{drink_cmd(maxDrink)}}>주량 추가</button>
-*/}
 
+*/}
   
   <div style={{ textAlign: 'center', display: 'flex', alignItems: 'center',justifyContent:'center' }}>
     <Typography variant='h3' component='span' style={{ color: 'rgb(240,255,255)' }}>
       %
     </Typography>
     <Typography align='center' variant='h1' display="inline" gutterBottom style={{fontWeight:'360',fontSize:"110px" }}>
-      {val}
+      {maxDrink}
     </Typography>
     <div style={{ display: 'flex', flexDirection: "column", justifyContent: 'space-between', alignItems: 'center' ,textAlign:'center'}}>
       
@@ -227,23 +250,12 @@ return (
     <Button onClick={() => window.open("https://www.kakaomobility.com/service-kakaot")} style={{borderRadius:'40px',border:'2px solid green',color:'gray',margin:'10px'}} endIcon={<LocalTaxiIcon/>}>
       TAXI
     </Button>
-    <Button  onClick={handleOpen4} style={{borderRadius:'40px',border:'2px solid black',color:'black',margin:'10px'}} endIcon={<LiquorIcon/>}>
-      주량
-    </Button>
     
-    <Modal
-  open={open4}
-  onClose={handleClose4}
-  aria-labelledby="modal-modal-title"
-  aria-describedby="modal-modal-description">
-          <Amount handleClose4={handleClose4} alcoholPercent={val}/>
-          </Modal>
-
-
       <Button  onClick={handleOpen3} style={{borderRadius:'40px',border:'2px solid black',color:'black',margin:'10px'}} endIcon={<HelpOutlineOutlinedIcon/>}>
       help
     </Button>
 
+      <Button  style={{borderRadius:'40px',border:'2px solid black',color:'black',margin:'10px'}} onClick={()=>{setIsHalf(isHalf*-1); isHalf_cmd(isHalf); console.log(isHalf)}} endIcon={<LiquorIcon/>} > {mode} </Button>
 
     <Modal
   open={open3}

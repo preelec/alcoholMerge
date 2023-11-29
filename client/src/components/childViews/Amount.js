@@ -8,7 +8,8 @@ import { Navigate } from 'react-router-dom';
 import { useEffect } from 'react';
 const Amount = ({ handleClose4 }) => {
   const [globalAmount,setGlobalAmount] = useState(0);
-       
+  const [weight,setWeight] = useState(0);
+  const [sex,setSex] = useState(0);
     const REST_API_KEY='c6da7ce3118630b84f078a0aafca2ece';
   // const REDIRECT_URI='http://localhost:3000/Redirection';
   // 해당 링크에 인가코드 발급 해줌
@@ -38,8 +39,11 @@ const Amount = ({ handleClose4 }) => {
 
 
       const enter = async () =>{
-        
-        sessionStorage.setItem('globalAmount', JSON.stringify(globalAmount));
+        const storedValue = JSON.parse(localStorage.getItem('globalAmount'));
+        console.log(storedValue)
+        localStorage.setItem('globalAmount', JSON.stringify(globalAmount));
+        localStorage.setItem('weight', JSON.stringify(weight));
+        localStorage.setItem('sex', JSON.stringify(sex));
             console.log(globalAmount);
          window.location.href = kakaoURL
         }
@@ -48,6 +52,10 @@ const Amount = ({ handleClose4 }) => {
     return (
     <Box sx={stylemodal}>
      <Input placeholder='주량을 입력해주세요(잔)' onChange={(e)=>{setGlobalAmount(e.target.value)}}  type='number'/>
+     <br></br>
+     <Input placeholder='몸무게를 입력해주세요(kg)' onChange={(e)=>{setWeight(e.target.value)}}  type='number'/>
+     <br></br>
+     <Input placeholder='성별을 입력해주세요(남자면 1 여자면 0)' onChange={(e)=>{setSex(e.target.value)}}  type='number'/>
      <Button variant="contained" onClick={enter} >
         확인
 </Button>

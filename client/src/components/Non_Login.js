@@ -12,13 +12,8 @@ const [nickName,setNickName] = useState('');
 
 const Non_Login_bnt = ()=>{
 
-<<<<<<< HEAD
 // axios.post('http://localhost:3001/Non_Login').then((res)=>{
    navigate('/Non_Login_sucess')
-=======
-// axios.post('http://localhost:4000/Non_Login').then((res)=>{
-//   navigate('/Non_Login_sucess')
->>>>>>> 1564a17e5f4ff3df1dd64a4c2aa7983faa84df12
 // })
 
 }
@@ -48,12 +43,10 @@ const Non_Login_bnt = ()=>{
     <input placeholder="닉네임을입력" type="search" class="input" onChange={(e)=>{setAmount(e.target.value)}}/>
     </div>
     <div style={{display:'flex',marginTop:'50px',flexDirection:'row-reverse'}}>
-<<<<<<< HEAD
+
+
     <button onClick={Non_Login_bnt} className='cateBtn'>로그인</button>
-=======
-    <button className='cateBtn'>로그인</button>
->>>>>>> 1564a17e5f4ff3df1dd64a4c2aa7983faa84df12
-    </div>
+   </div>
     </div>
     </div>
     </div>

@@ -21,15 +21,26 @@ export default function Main() {
 
   const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`
   
+  
+  const remove = () =>{
+    const storedValue = JSON.parse(localStorage.getItem('globalAmount'));
+    console.log(storedValue)
+    localStorage.removeItem('globalAmount');
+    localStorage.removeItem('sex');
+    localStorage.removeItem('weight');
+    
+}
+
+
   const loginHandler = async () => {
     try {
       const response = await axios.get('http://localhost:3001/');
+      const storedValue = JSON.parse(localStorage.getItem('globalAmount'));
       const amountCheck = response.data.find(response => response.KaKaoData.amount === true);
-  
-      if (amountCheck) {
-        navigate('/Amount');  
+      if (storedValue) {
+        window.location.href = kakaoURL
       } else {
-          window.location.href = kakaoURL
+          navigate('/Amount'); 
 
       }
     } catch (error) {
@@ -38,8 +49,8 @@ export default function Main() {
     }
   };
 
-  
 
+ 
   const navigate = useNavigate(); 
   return (
     <div>
@@ -81,7 +92,6 @@ export default function Main() {
                         justifyContent:'center',
                         alignItems:'center',
                         marginTop:'30px'
-                        
                       }
                   }>
                     <svg height="32" width="32" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -103,9 +113,8 @@ export default function Main() {
                       <path d="M16.5 3C19.538 3 22 5.5 22 9c0 7-7.5 11-10 12.5C9.5 20 2 16 2 9c0-3.5 2.5-6 5.5-6C9.36 3 11 4 12 5c1-1 2.64-2 4.5-2z"></path>
                       </svg>
                     {/* <div style={Main_css}><button onClick={()=>bnt_confirm()}>설명서</button></div> */}
-                    <button className='cateBtn'>설명서</button>
+                    <button onClick={remove} className='cateBtn'>설명서</button>
                     </div>
-                    <p style={{display:'flex', flexDirection:'row-reverse',paddingRight:'20px', fontWeight:'bold'}}>회원가입하셨나요 ?</p>
                 </div>
         </div>
     </div>
