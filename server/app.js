@@ -53,10 +53,28 @@ app.get('/get-data', (req, res) => { //react에게 값을 보내기 위해 json�
   res.json({ value: arduinoValue });
 });
 
-app.post('/send-data-react', (req, res) => { //React측에서 값을 받음
-  reactValue = req.body.val;
-  console.log('ReactValue:', reactValue);
-  res.send('Value received successfully.');
+app.post('/send-data', async (req, res) => {
+  try {
+    // 뮤텍스 활용
+    while (mutex.arduino) {
+      // 다른 클라이언트가 뮤텍스를 해제할 때까지 대기
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+    mutex.arduino = true;
+
+    arduinoValue = req.body.val;
+    mutex.arduino = false;
+    if(Number(JSON.parse(reactValue).drink) === Number(arduinoValue)){
+      reactValue = JSON.stringify({
+        drink: 0,
+        isHalf: -1
+      });
+    }
+    res.send(reactValue);
+  } catch (error) {
+    console.error('Error in /send-data:', error);
+    res.status(500).send('Internal Server Error');
+  }
 });
 
 /*

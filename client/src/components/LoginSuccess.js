@@ -15,9 +15,10 @@ import GlobalEmail from './GlobalEmail';
 
 const LoginSuccess = () => {
   
-const [maxDrink, setMaxDrink] = useState(0); // 이 값을 보낼 예정  아두이노에 보내는 주량
+const [maxDrink, setMaxDrink] = useState(0); 
 const [clientCnt, setClientSet] = useState(0);
 const [val,setVal] = useState(0)
+const [s,setS] = useState(5);
 const [open, setOpen] = React.useState(false);
 const [open2,setOpen2] = React.useState(false);
 const [open3,setOpen3] = React.useState(false);
@@ -50,7 +51,6 @@ useEffect(() => {
         const amountPerson = emailCheck.KaKaoData.amount;
         const sex = emailCheck.KaKaoData.sex;
         const weight = emailCheck.KaKaoData.weight
-     
         setCmd(prevCmd => ({
           ...prevCmd,
           drink: amountPerson
@@ -89,7 +89,7 @@ useEffect(() => {
 
 
 useEffect(()=>{
-  const d = (50*0.16*0.7894)*5/(10*sex2*weight)
+  const d = (50*0.16*0.7894)*val/(10*sex2*weight)
   setMaxDrink(d.toFixed(4))
 
 },)
@@ -186,7 +186,7 @@ return (
      환영합니다 {nickname} 회원님
   </Typography>
   <Typography align="center" style={{ fontWeight: 'bold' }} variant="subtitle1" gutterBottom>
-    현재 마신 잔은 {val} 이며  주량까지 남은 잔은{amount} 입니다
+    현재 마신 잔은 {val} 이며  주량까지 남은 잔은{amount-val} 입니다
   </Typography>
   </div>
   <div style={{ alignItems: 'center', justifyContent:'center',textAlign:'center' }}>
@@ -234,7 +234,7 @@ return (
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-       <Tips alcoholPercent={val} handleClose={handleClose}/>
+       <Tips alcoholPercent={maxDrink} handleClose={handleClose}/>
       </Modal>
      <hr/>
      <Button onClick={handleOpen2} style={{borderRadius:'40px',border:'2px solid blue '}} endIcon={<TipsAndUpdatesOutlinedIcon/>}>
@@ -245,7 +245,7 @@ return (
   onClose={handleClose2}
   aria-labelledby="modal-modal-title"
   aria-describedby="modal-modal-description">
-          <SemiTips handleClose2={handleClose2} alcoholPercent={val}/>
+          <SemiTips handleClose2={handleClose2} alcoholPercent={maxDrink}/>
           </Modal>   
     <Button onClick={() => window.open("https://www.kakaomobility.com/service-kakaot")} style={{borderRadius:'40px',border:'2px solid green',color:'gray',margin:'10px'}} endIcon={<LocalTaxiIcon/>}>
       TAXI
