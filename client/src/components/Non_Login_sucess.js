@@ -107,6 +107,7 @@ useEffect(() => {
 useEffect(()=>{
   const d = (50*0.16*0.7894)*val/(10*sex2*weight)
   setMaxDrink(d.toFixed(4))
+  alert(val=maxDrink)
 
 },)
 

@@ -91,8 +91,10 @@ useEffect(() => {
 useEffect(()=>{
   const d = (50*0.16*0.7894)*val/(10*sex2*weight)
   setMaxDrink(d.toFixed(4))
-
-},)
+  if(val==maxDrink){
+    alert('최대 주량에 도달했습니다')
+  }
+},[val])
 
 useEffect(() => {
   const fetchData = async () => {
